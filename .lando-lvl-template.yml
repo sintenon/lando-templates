@@ -1,0 +1,33 @@
+name: ${PROJECT_NAME}
+recipe: laravel
+config:
+  webroot: ./public
+services:
+  # lock database port
+  database:
+    # set the correct timezone
+    run_as_root:
+      - ln -snf /usr/share/zoneinfo/Europe/Rome /etc/localtime
+      - echo "Europe/Rome" > /etc/timezone
+    portforward: ${MYSQL_PORT_FORWARD}
+  # scan alternative path to avoid unauthorized response
+  #if root path is protected
+  appserver:
+    # set the correct timezone
+    run_as_root:
+      - ln -snf /usr/share/zoneinfo/Europe/Rome /etc/localtime
+      - echo "Europe/Rome" > /etc/timezone
+    scanner:
+      path: /login
+      timeout: 1000
+      retry: 5
+  phpmyadminservice:
+    # set the correct timezone
+    run_as_root:
+      - ln -snf /usr/share/zoneinfo/Europe/Rome /etc/localtime
+      - echo "Europe/Rome" > /etc/timezone
+    type: phpmyadmin
+proxy:
+  phpmyadminservice:
+    # must be in the format myadmin.projectname.dev.local
+    - ${PHPMYADMIN_PROXY}
